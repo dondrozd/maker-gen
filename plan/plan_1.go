@@ -1,37 +1,41 @@
 package plan
 
-import "dondrozd/maker-gen/examples"
+import (
+	"database/sql"
+	"dondrozd/maker-gen/example"
+	"time"
+)
 
-type ExampleOneModifier func(*examples.ExampleOne)
+type ExampleOneModifier func(*example.ExampleOne)
 
 type ExampleOneTemplate interface {
-	With(modifiers ...ExampleOneModifier) ExampleOneTemplate
-	Make() *examples.ExampleOne
+	ButWith(modifiers ...ExampleOneModifier) ExampleOneTemplate
+	Make() *example.ExampleOne
 }
 
 type exampleOneTemplate struct {
-	subject *examples.ExampleOne
+	subject *example.ExampleOne
 }
 
 func NewExampleOneTemplate() ExampleOneTemplate {
 	return &exampleOneTemplate{
-		subject: new(examples.ExampleOne),
+		subject: new(example.ExampleOne),
 	}
 }
 
-func NewExampleOneTemplateFrom(subject *examples.ExampleOne) ExampleOneTemplate {
+func NewExampleOneTemplateFrom(subject *example.ExampleOne) ExampleOneTemplate {
 	return &exampleOneTemplate{
 		subject: subject,
 	}
 }
 
-func (t *exampleOneTemplate) With(modifiers ...ExampleOneModifier) ExampleOneTemplate {
+func (t *exampleOneTemplate) ButWith(modifiers ...ExampleOneModifier) ExampleOneTemplate {
 	return &exampleOneTemplate{
 		subject: t.apply(*t.subject, modifiers...),
 	}
 }
 
-func (t *exampleOneTemplate) apply(subject examples.ExampleOne, modifiers ...ExampleOneModifier) *examples.ExampleOne {
+func (t *exampleOneTemplate) apply(subject example.ExampleOne, modifiers ...ExampleOneModifier) *example.ExampleOne {
 	subjectPtr := &subject
 	for _, modifier := range modifiers {
 		modifier(subjectPtr)
@@ -40,18 +44,30 @@ func (t *exampleOneTemplate) apply(subject examples.ExampleOne, modifiers ...Exa
 	return subjectPtr
 }
 
-func (t *exampleOneTemplate) Make() *examples.ExampleOne {
+func (t *exampleOneTemplate) Make() *example.ExampleOne {
 	return t.subject
 }
 
 func WithPublicString(value string) ExampleOneModifier {
-	return func(subject *examples.ExampleOne) {
+	return func(subject *example.ExampleOne) {
 		subject.PublicString = value
 	}
 }
 
 func WithPublicInt(value int64) ExampleOneModifier {
-	return func(subject *examples.ExampleOne) {
+	return func(subject *example.ExampleOne) {
 		subject.PublicInt = value
+	}
+}
+
+func WithPublicTime(value time.Time) ExampleOneModifier {
+	return func(subject *example.ExampleOne) {
+		subject.PublicTime = value
+	}
+}
+
+func WithPublicNullString(value sql.NullString) ExampleOneModifier {
+	return func(subject *example.ExampleOne) {
+		subject.PublicNullString = value
 	}
 }

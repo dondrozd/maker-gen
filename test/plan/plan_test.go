@@ -1,7 +1,7 @@
 package plan_test
 
 import (
-	"dondrozd/maker-gen/examples"
+	"dondrozd/maker-gen/example"
 	"dondrozd/maker-gen/plan"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -13,7 +13,7 @@ var _ = Describe("Plan", func() {
 		var (
 			subject      plan.ExampleOneTemplate
 			childSubject plan.ExampleOneTemplate
-			actual       *examples.ExampleOne
+			actual       *example.ExampleOne
 		)
 		BeforeEach(func() {
 			subject = plan.NewExampleOneTemplate()
@@ -30,7 +30,7 @@ var _ = Describe("Plan", func() {
 			)
 		})
 		It("should successfully set data", func() {
-			actual = subject.With(
+			actual = subject.ButWith(
 				plan.WithPublicString("TEST_DATA"),
 			).Make()
 
@@ -40,10 +40,10 @@ var _ = Describe("Plan", func() {
 		})
 		Describe("with derived template", func() {
 			BeforeEach(func() {
-				subject = subject.With(
+				subject = subject.ButWith(
 					plan.WithPublicString("TEST_DATA"),
 				)
-				childSubject = subject.With(plan.WithPublicInt(2))
+				childSubject = subject.ButWith(plan.WithPublicInt(2))
 			})
 			It("parent template should have public int 0", func() {
 				actual = subject.Make()
