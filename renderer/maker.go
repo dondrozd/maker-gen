@@ -1,12 +1,13 @@
 package renderer
 
 import (
-	"dondrozd/maker-gen/model"
 	"embed"
 	"fmt"
 	"io"
 	"log"
 	"text/template"
+
+	"github.com/dondrozd/maker-gen/model"
 )
 
 //go:embed templates/*

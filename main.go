@@ -1,12 +1,13 @@
 package main
 
 import (
-	parsers "dondrozd/maker-gen/parser"
-	"dondrozd/maker-gen/renderer"
 	"fmt"
 	"io"
 	"log"
 	"os"
+
+	parsers "github.com/dondrozd/maker-gen/parser"
+	"github.com/dondrozd/maker-gen/renderer"
 
 	"github.com/urfave/cli/v2"
 )

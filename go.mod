@@ -1,4 +1,4 @@
-module dondrozd/maker-gen
+module github.com/dondrozd/maker-gen
 
 go 1.23.2
 

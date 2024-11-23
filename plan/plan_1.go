@@ -2,8 +2,9 @@ package plan
 
 import (
 	"database/sql"
-	"dondrozd/maker-gen/example"
 	"time"
+
+	"github.com/dondrozd/maker-gen/example"
 )
 
 type ExampleOneModifier func(*example.ExampleOne)

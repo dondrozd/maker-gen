@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"bufio"
-	"dondrozd/maker-gen/model"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -10,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/dondrozd/maker-gen/model"
 )
 
 func MakerParse(fileName string) (model.GoFileModel, error) {

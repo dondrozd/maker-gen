@@ -2,9 +2,10 @@ package plan_test
 
 import (
 	"bytes"
-	"dondrozd/maker-gen/model"
-	"dondrozd/maker-gen/renderer"
 	"fmt"
+
+	"github.com/dondrozd/maker-gen/model"
+	"github.com/dondrozd/maker-gen/renderer"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

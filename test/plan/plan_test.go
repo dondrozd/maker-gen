@@ -1,8 +1,8 @@
 package plan_test
 
 import (
-	"dondrozd/maker-gen/example"
-	"dondrozd/maker-gen/plan"
+	"github.com/dondrozd/maker-gen/example"
+	"github.com/dondrozd/maker-gen/plan"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
