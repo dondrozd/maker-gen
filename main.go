@@ -7,6 +7,7 @@ import (
 	"os"
 
 	parsers "github.com/dondrozd/maker-gen/parser"
+	"github.com/dondrozd/maker-gen/processor"
 	"github.com/dondrozd/maker-gen/renderer"
 
 	"github.com/urfave/cli/v2"
@@ -30,10 +31,16 @@ func main() {
 }
 
 func genMaker(cCtx *cli.Context) error {
-	fmt.Println("generate maker: ", cCtx.Args().First())
+	structName := cCtx.Args().First()
+
+	fmt.Println("generate maker: ", structName)
 	var readCloser io.WriteCloser
 	var err error
 	fileModel, err := parsers.MakerParse("example/example_1.go")
+	if err != nil {
+		return err
+	}
+	makerModel, err := processor.PublicProc(fileModel, structName)
 	if err != nil {
 		return err
 	}
@@ -48,5 +55,5 @@ func genMaker(cCtx *cli.Context) error {
 	}
 	defer readCloser.Close()
 
-	return renderer.RenderMaker(fileModel, readCloser)
+	return renderer.RenderMaker(makerModel, readCloser)
 }
