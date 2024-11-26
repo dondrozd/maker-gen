@@ -17,6 +17,7 @@ type StructModel struct {
 	Name       string
 	Properties []StructPropertyModel
 }
+
 type StructPropertyModel struct {
 	Name string
 	Type string

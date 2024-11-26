@@ -1,4 +1,4 @@
-package plan_test
+package renderer_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestPlan(t *testing.T) {
+func TestRender(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Plan Suite")
+	RunSpecs(t, "Renderer Suite")
 }

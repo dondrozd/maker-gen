@@ -8,11 +8,54 @@ import {{.Alias -}} {{.ImportPath}}
 import (
 {{range .Imports}}  {{.Alias -}} {{.ImportPath}}
 {{end}}){{end}}{{end}}
-{{range .Structs}}
-type {{.Name}}Modifier func(*{{$.PackageName}}.{{.Name}})
+{{range $structIdx, $struct :=  .Structs}}
+type {{$struct.Name}}Modifier func(*{{$.PackageName}}.{{$struct.Name}})
 
-type {{.Name}}Template interface {
-	ButWith(modifiers ...{{.Name}}Modifier) {{.Name}}Template
-	Make() *{{$.PackageName}}.{{.Name}}
+type {{$struct.Name}}Template interface {
+	ButWith(modifiers ...{{$struct.Name}}Modifier) {{$struct.Name}}Template
+	Make() *{{$.PackageName}}.{{$struct.Name}}
 }
+
+type template{{$struct.Name}} struct {
+	subject *{{$.PackageName}}.{{$struct.Name}}
+}
+
+func New{{$struct.Name}}Template() {{$struct.Name}}Template {
+	return &template{{$struct.Name}}{
+		subject: new({{$.PackageName}}.{{$struct.Name}}),
+	}
+}
+
+func New{{$struct.Name}}TemplateFrom(subject *{{$.PackageName}}.{{$struct.Name}}) {{$struct.Name}}Template {
+	return &template{{$struct.Name}}{
+		subject: subject,
+	}
+}
+
+func (t *template{{$struct.Name}}) ButWith(modifiers ...{{$struct.Name}}Modifier) {{$struct.Name}}Template {
+	return &template{{$struct.Name}}{
+		subject: t.apply(*t.subject, modifiers...),
+	}
+}
+
+func (t *template{{$struct.Name}}) apply(subject {{$.PackageName}}.{{$struct.Name}}, modifiers ...{{$struct.Name}}Modifier) *{{$.PackageName}}.{{$struct.Name}} {
+	subjectPtr := &subject
+	for _, modifier := range modifiers {
+		modifier(subjectPtr)
+	}
+
+	return subjectPtr
+}
+
+func (t *template{{$struct.Name}}) Make() *{{$.PackageName}}.{{$struct.Name}} {
+	return t.subject
+}
+
+{{range $propIdx, $prop := .Properties}}
+func With{{$struct.WithPrefix}}{{$prop.Name}}(value {{$prop.Type}}) {{$struct.Name}}Modifier {
+	return func(subject *{{$.PackageName}}.{{$struct.Name}}) {
+		subject.{{$prop.Name}} = value
+	}
+}
+{{end}}
 {{end}}

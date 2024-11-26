@@ -1,4 +1,4 @@
-package parsers
+package parser
 
 import (
 	"bufio"
@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,17 +32,17 @@ func MakerParse(fileName string) (model.GoFileModel, error) {
 		return targetFile, fmt.Errorf("error getting module path: %w", err)
 	}
 	// Discover and print imports
-	fmt.Println("Imports:")
+	slog.Info("Imports:")
 	for _, imp := range node.Imports {
 		importPath := imp.Path.Value // Import path is quoted, e.g., `"fmt"`
 		if imp.Name != nil {
-			fmt.Printf("  %s %s\n", imp.Name.Name, importPath) // Alias imports
+			slog.Info(fmt.Sprintf("  %s %s\n", imp.Name.Name, importPath)) // Alias imports
 			targetFile.Imports = append(targetFile.Imports, model.ImportModel{
 				Alias:      imp.Name.Name,
 				ImportPath: importPath,
 			})
 		} else {
-			fmt.Printf("  %s\n", importPath) // Regular imports
+			slog.Info(fmt.Sprintf("  %s\n", importPath)) // Regular imports
 			targetFile.Imports = append(targetFile.Imports, model.ImportModel{
 				ImportPath: importPath,
 			})
@@ -52,13 +53,13 @@ func MakerParse(fileName string) (model.GoFileModel, error) {
 		typeSpec, ok := n.(*ast.TypeSpec)
 		if ok {
 			if structType, isStruct := typeSpec.Type.(*ast.StructType); isStruct {
-				fmt.Println("Struct found:", typeSpec.Name.Name)
+				slog.Info("Struct found: " + typeSpec.Name.Name)
 				structModel := model.StructModel{Name: typeSpec.Name.Name}
 
 				// Iterate over the fields in the struct
 				for _, field := range structType.Fields.List {
 					for _, fieldName := range field.Names {
-						fmt.Printf("  Field: %s, Type: %s\n", fieldName.Name, field.Type)
+						slog.Info(fmt.Sprintf("  Field: %s, Type: %s\n", fieldName.Name, field.Type))
 						propModel := model.StructPropertyModel{
 							Name: fieldName.Name,
 							Type: typeToString(field.Type),
@@ -66,7 +67,6 @@ func MakerParse(fileName string) (model.GoFileModel, error) {
 						structModel.Properties = append(structModel.Properties, propModel)
 					}
 				}
-				fmt.Println()
 				targetFile.Structs = append(targetFile.Structs, structModel)
 			}
 		}
@@ -85,7 +85,6 @@ func typeToString(expr ast.Expr) string {
 	case *ast.ArrayType:
 		return "[]" + typeToString(t.Elt) // Array types
 	case *ast.SelectorExpr:
-		fmt.Println("SelectorExpr")
 		return fmt.Sprintf("%s.%s", typeToString(t.X), t.Sel.Name) // Qualified types like "pkg.Type"
 	case *ast.MapType:
 		return fmt.Sprintf("map[%s]%s", typeToString(t.Key), typeToString(t.Value)) // Map types

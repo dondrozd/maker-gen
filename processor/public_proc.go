@@ -2,15 +2,17 @@ package processor
 
 import (
 	"fmt"
+	"log/slog"
 	"unicode"
 
 	"github.com/dondrozd/maker-gen/model"
 )
 
-func PublicProc(fileModel model.GoFileModel, structName string) (model.MakerModel, error) {
+func PublicProc(fileModel model.GoFileModel, cmd model.GenerateParams) (model.MakerModel, error) {
+	slog.Info("PublicProc called")
 	imports := buildImports(fileModel)
 	// only keep the targeted struct
-	structs, err := filterStructByName(fileModel.Structs, structName)
+	structs, err := filterStructByName(fileModel.Structs, cmd)
 	if err != nil {
 		return model.MakerModel{}, err
 	}
@@ -30,24 +32,28 @@ func buildImports(fileModel model.GoFileModel) []model.ImportModel {
 	imports[len(imports)-1] = model.ImportModel{
 		ImportPath: fmt.Sprintf("\"%s/%s\"", fileModel.ModulePath, fileModel.PackageName),
 	}
+
 	return imports
 }
 
-func filterStructByName(structModels []model.StructModel, structName string) ([]model.StructModel, error) {
+func filterStructByName(structModels []model.StructModel, cmd model.GenerateParams) ([]model.MakerStructModel, error) {
+	slog.Info("filterStructByName:" + cmd.StructName)
 	for _, structModel := range structModels {
-		if structModel.Name == structName {
-			return []model.StructModel{
-				mapStruct(structModel),
+		// support * in the future
+		if structModel.Name == cmd.StructName {
+			return []model.MakerStructModel{
+				mapStruct(structModel, cmd),
 			}, nil
 		}
 	}
 
-	return nil, fmt.Errorf("could not find struct with name: %s", structName)
+	return nil, fmt.Errorf("could not find struct with name: %s", cmd.StructName)
 }
 
-func mapStruct(sructModel model.StructModel) model.StructModel {
-	return model.StructModel{
+func mapStruct(sructModel model.StructModel, cmd model.GenerateParams) model.MakerStructModel {
+	return model.MakerStructModel{
 		Name:       sructModel.Name,
+		WithPrefix: cmd.WithPrefix,
 		Properties: mapPublicProperties(sructModel.Properties),
 	}
 }
@@ -64,6 +70,5 @@ func mapPublicProperties(structPropertyModel []model.StructPropertyModel) []mode
 }
 
 func isPublic(s string) bool {
-	firstChar := rune(s[0]) // Convert the first character to a rune
-	return unicode.IsUpper(firstChar)
+	return unicode.IsUpper(rune(s[0]))
 }
